@@ -1,0 +1,27 @@
+dependencies {
+    // Have users opt into JUnit 5
+    compile "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
+    compile "org.junit.jupiter:junit-jupiter-api:${junit5Version}"
+
+    // Use Junit 5 for the actual unit tests
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junit5Version}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junit5Version}"
+}
+z
+configurations {
+    tests {
+        extendsFrom testRuntime
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+task testJar(type: Jar, dependsOn: testClasses) {
+    from sourceSets.test.output
+}
+
+artifacts {
+    archives testJar
+}

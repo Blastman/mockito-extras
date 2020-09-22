@@ -1,0 +1,40 @@
+plugins {
+    id 'java'
+    id "com.github.hierynomus.license" version "0.15.0"
+}
+
+description = 'Adds extra utility functions to Mockito'
+
+ext {
+    mockitoVersion = "3.0.0"
+    junit4Version = '4.10'
+    junit5Version = '5.6.2'
+}
+
+allprojects {
+    group = 'org.torson.mockito.extras'
+    repositories {
+        jcenter()
+    }
+
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+}
+
+apply from: 'gradle/license.gradle'
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: "maven-publish"
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+        withJavadocJar()
+        withSourcesJar()
+    }
+
+    dependencies {
+        implementation "org.mockito:mockito-core:${mockitoVersion}"
+    }
+}
