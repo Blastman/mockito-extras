@@ -1,0 +1,49 @@
+language: java
+
+sudo: false
+
+jdk:
+    - openjdk11 
+
+if: branch =~ /.*/ && tag IS blank 
+
+before_script:
+  - echo "mavenUser=$NEXUS_USER" >> $HOME/.gradle/gradle.properties
+  - echo "mavenPassword=$NEXUS_PASSWORD" >> $HOME/.gradle/gradle.properties
+  - echo "systemProp.sonar.host.url=https://sonar.d3vcloud.com" >> $HOME/.gradle/gradle.properties
+  - echo "systemProp.sonar.login=$SONAR_TOKEN" >> $HOME/.gradle/gradle.properties
+
+install: true
+
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
+
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+
+script:
+  - export _JAVA_OPTIONS="-Xmx1G"
+  - java -version
+  - |
+    echo "TRAVIS_PULL_REQUEST: ${TRAVIS_PULL_REQUEST}"
+    echo "TRAVIS_BRANCH: ${TRAVIS_BRANCH}"
+    if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "develop" ]; then
+      ./gradlew sonarqube publish reckonTagCreate reckonTagPush -Preckon.scope=patch -Preckon.stage=final;
+    elif [ -f version.txt ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+      ./gradlew publish -PmanualVersion=`cat version.txt`;
+    else
+      ./gradlew build;
+    fi
+
+notifications:
+  slack:
+    rooms:
+      secure: aEE4AE0RWbxZc7Us7abXvoFIiD5ewzzMwcIIv1BGFBO6OfqCFinE81j7mx99365ZyZ45XLNVecZGZrqliUraX76z/nWK3+A5ukuJvY1bb5HiT34tbtFvDMc6lxU7zR3CYMTkviTaVe9ib2soZCWx2rsiSmqTeCfErBwujPiVPWpmnXl+U3Yft8KUAg5LO3vJId+fl3FREhhCdbokwItT2+ij+/7iR2U3KE35AjS0bVtGIR2qB5eHsbXO32Us01lwgzICzr8gpzl3AadsAnyUYuW6pHTZN9ReFMQUh9M5wVg6SrmDC1l0bJhS7T1B6GxALO7EBE6P57ygOf0ONs0HTH5cmIFQ5QD1YBrr/srRPKf4tssGDdq6RZh/egoyEdqMWmkWyyhvab5a3724JAzkvkS+8fzO53BhXpK56k9DnynCJ1gHP9mp7Y5wJIHvSS1q8g+4w1a9MKO+0IXm+9grkjUO1iiZNHRmiYgueyLHWWnV1rWfIC1Gu85XLtD7Ey19B9ENesvbu2t4rkuCMDHBZAQvscI/jic0LR3TGPAjlm0g8ltFBkEeLDikVIDeB2u1v2JgYyBoYZmlGQZyGfiFF6aw8FjYmQ7qPkDKXfGsTpm2FF/ZSgrz5VRB2ohHisbDiS6FmN+QJf7LbDKTitk6gDdkaD1AiOdWc4RdvLq1zEU=
+    on_success: never
+    on_failure: always
+    template:
+    - Build <%{build_url}|#%{build_number}> (<%{compare_url}|%{commit}>) of %{repository}@%{branch}
+      by %{author} %{result}
