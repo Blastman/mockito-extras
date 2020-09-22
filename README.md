@@ -125,7 +125,7 @@ public class SomeTestClass {
         testObject.doOperation();
     
         vierfy(testObject1).getString();
-        mocks.verifyNoIntercations();
+        mocks.verifyNoMoreInteractions();
     }
 }
 ```
