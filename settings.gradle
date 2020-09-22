@@ -10,5 +10,3 @@
 rootProject.name = 'mockito-extras'
 
 include 'mockito-extras-core'
-//include 'mockito-extras-junit4'  // TODO
-include 'mockito-extras-junit5'

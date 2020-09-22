@@ -66,6 +66,8 @@ public class MockitoExtrasAnnotations {
      * </ul>
      *
      * See examples in javadoc for {@link MockitoExtrasAnnotations} class.
+     *
+     * @param testClass The object with the mocks. Normally it's "this".
      */
     public static void initMocks(Object testClass) {
         Optional<MockSpotter> mockCollector = MockitoExtraInitializer.setupCollector(testClass);

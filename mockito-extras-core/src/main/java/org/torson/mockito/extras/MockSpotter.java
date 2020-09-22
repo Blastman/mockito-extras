@@ -57,6 +57,8 @@ public class MockSpotter {
 
     /**
      * Returns all the mocks that are known.
+     *
+     * @return All the mocks that are known.
      */
     public Object[] getMocks() {
         return createdMocksListener.getMocks().toArray();
